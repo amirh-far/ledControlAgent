@@ -1,11 +1,15 @@
 from openai import OpenAI
+import json
 
 
 def gpt_chat_completion(prompt: str):
     client = OpenAI()
 
     system_prompt = """
-    You are an assistant for an IoT system that controls LED lights. Based on the user's prompt, you must decide which function to call for controlling the lights.
+    You are an assistant for an IoT system that controls LED lights. Based on the user's prompt, you must decide which function to call for controlling the lights. If you are asked to control multiple lights, provide the instructions in the list returned.
+    A led corresponds to the kitchen light.
+    B led corresponds to the room light.
+
     The function options are:
     A1: turning on the light number 1,
     A0: turning off the light number 1,
@@ -14,10 +18,11 @@ def gpt_chat_completion(prompt: str):
     
     """
 
-    functions = [
-        {
+    tools = [{
+        "type": "function",
+        "function": {
             "name": "control_lights",
-            "description": "Control the IoT LED lights based on the user's instructions. If the prompt requires multiple led controls provide them in the list returned.",
+            "description": "Control the IoT LED lights based on the user's instructions. If the prompt requires multiple LED controls, provide them in the list returned.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -29,10 +34,12 @@ def gpt_chat_completion(prompt: str):
                         }
                     }
                 },
-                "required": ["codes"]
-            }
+                "required": ["codes"],
+                "additionalProperties": False
+            },
+            "strict": True
         }
-    ]
+    }]
 
     messages = [
         {
@@ -48,10 +55,21 @@ def gpt_chat_completion(prompt: str):
     completion = client.chat.completions.create(
         model="gpt-4o-mini",
         messages=messages,
-        functions=functions,
-        function_call="auto"
+        tools=tools
     )
 
-    print(completion.choices[0].message)
-    message = f"{completion.choices[0].message.content}"
-    return message
+    tool_calls = completion.choices[0].message.tool_calls[0]
+
+    codes_json = tool_calls.function.arguments
+
+    codes = json.loads(codes_json)
+
+    with open("data.json", "w", encoding="utf-8") as f:
+        json.dump(codes, f, ensure_ascii=False, indent=4)
+
+    # print(codes_json)
+
+    # print(completion.choices[0].message)
+    # message = f"{completion.choices[0].message.content}"
+
+    return codes

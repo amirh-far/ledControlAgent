@@ -1,22 +1,17 @@
-
-
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-#ifndef LED_BUILTIN
-#define LED_BUILTIN 2  // Set the GPIO pin where you connected your test LED or comment this line out if your dev board has a built-in LED
-#endif
-
-// Replace these with your Wi-Fi credentials
+const int A_LED = 4;
+const int B_LED = 33;
 const char* ssid = "Amirhosein";
 const char* password = "fkmo5779";
-char* data;
+JsonDocument doc;
 
-const char* sendGETRequest() {
+void sendGETRequest() {
   if (WiFi.status() == WL_CONNECTED) {  // Check Wi-Fi connection
     HTTPClient http;
-    String serverUrl = "http://192.168.47.170/api/v1/AI/data";  // Replace with your server URL
+    String serverUrl = "http://192.168.167.170/api/v1/AI/data";  // Replace with your server URL
 
     Serial.println("Sending GET request...");
     http.begin(serverUrl);              // Specify the URL
@@ -31,15 +26,7 @@ const char* sendGETRequest() {
       Serial.println("Response: " + responseBody);
 
       // Parse the JSON response
-      JsonDocument doc;  // Adjust the size as needed
       deserializeJson(doc, responseBody);
-
-      // Extract specific values
-      const char* data;
-      data = doc["data"];  // Assuming the response has a key "data"
-      Serial.print("Extracted Data: ");
-      Serial.println(data);
-      return data;
 
     } else {
       Serial.print("Error on sending GET request: ");
@@ -52,11 +39,40 @@ const char* sendGETRequest() {
   }
 }
 
+void sendPOSTRequest(String log) {
+  HTTPClient http;
+  String api_url = "http://192.168.167.170/api/v1/AI/log";
+  http.begin(api_url);
+  http.addHeader("Content-Type", "application/json");
+
+  // JSON payload for the OpenAI API
+  String payload = "{";
+  payload += "\"log\":";
+  payload += "\"";
+  payload += log;
+  payload += "\"";
+  payload += "}";
+  Serial.println(payload);
+
+  int httpResponseCode = http.POST(payload);
+  String response = "";
+
+  if (httpResponseCode > 0) {
+    response = http.getString();
+  } else {
+    response = "Error: " + String(httpResponseCode);
+  }
+  http.end();
+}
+
 
 void setup() {
   Serial.begin(9600);
   delay(1000);
-  pinMode(4, OUTPUT);
+
+  pinMode(A_LED, OUTPUT);
+  pinMode(B_LED, OUTPUT);
+
   // Connect to Wi-Fi
   Serial.println("Connecting to Wi-Fi...");
   WiFi.begin(ssid, password);
@@ -69,15 +85,32 @@ void setup() {
   Serial.println(WiFi.localIP());
 }
 
+
 void loop() {
   delay(5000);
-  String data = sendGETRequest();
-  delay(5000);
-  Serial.println(data);
-  if (data == "A") {
-    digitalWrite(4, HIGH);
+  sendGETRequest();
+
+  String log = "";
+  for (int i = 0; i < doc["codes"].size(); i++) {
+    const char* code = doc["codes"][i];
+
+    Serial.println(code);
+    if (doc["codes"][i] == "A1") {
+      digitalWrite(A_LED, HIGH);
+      log += "Kitchen LED Turned ON Sucessfuly, ";
+    }
+    if (doc["codes"][i] == "A0") {
+      digitalWrite(A_LED, LOW);
+      log += "Kitchen LED Turned OFF Sucessfuly, ";
+    }
+    if (doc["codes"][i] == "B1") {
+      digitalWrite(B_LED, HIGH);
+      log += "Room LED Turned ON Sucessfuly, ";
+    }
+    if (doc["codes"][i] == "B0") {
+      digitalWrite(B_LED, LOW);
+      log += "Room LED Turned ON Sucessfuly, ";
+    }
   }
-  if (data == "B") {
-    digitalWrite(4, LOW);
-  }
+  sendPOSTRequest(log);
 }
