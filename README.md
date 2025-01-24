@@ -2,14 +2,6 @@
 
 An AI-powered agent designed to manage an ESP32 module for precise control of LED devices. This agent enables dynamic lighting effects, remote management, and intelligent behavior integration for a wide range of applications. Based on Telegram Bot, Completely Remote Access. ESP32 on Station Mode in Wifi configuration.
 
-
----
-
-# ledControlAgent
-
-
----
-
 ## Features
 
 - **AI-Driven Control**: Adaptive decision-making to dynamically adjust LED states based on predefined or learned patterns.
@@ -18,7 +10,7 @@ An AI-powered agent designed to manage an ESP32 module for precise control of LE
 - **Customizable and Extendable**: Add or modify effects and behaviors for specific use cases.
 - **Efficient Communication**: Optimized for low-latency and reliable data exchange with ESP32.
 
----
+
 
 ## Installation
 
@@ -64,9 +56,7 @@ Ensure you have the following:
     ```bash
    python bot.py
    ```
-   
 
----
 
 ## Usage
 
@@ -80,7 +70,6 @@ Ensure you have the following:
 #### Example outputs
 
 
----
 
 ## Contributing
 
@@ -100,7 +89,6 @@ We welcome contributions! Follow these steps:
    ```
 5. Open a pull request.
 
----
 
 ## License
 
