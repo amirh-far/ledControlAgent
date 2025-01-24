@@ -22,7 +22,7 @@ def gpt_chat_completion(prompt: str):
         "type": "function",
         "function": {
             "name": "control_lights",
-            "description": "Control the IoT LED lights based on the user's instructions. If the prompt requires multiple LED controls, provide them in the list returned.",
+            "description": "Control the IoT LED lights based on the user's instructions. If the prompt requires multiple LED controls, provide them all in the list returned.",
             "parameters": {
                 "type": "object",
                 "properties": {
