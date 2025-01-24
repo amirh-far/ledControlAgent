@@ -67,8 +67,11 @@ Ensure you have the following:
 3. The ESP32 will communicate with the agent via HTTP API requests.
 
 
-#### Example outputs
+#### Example Outputs
 
+<p>
+   <img src=
+</p>
 
 
 ## Contributing
