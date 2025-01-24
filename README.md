@@ -70,7 +70,9 @@ Ensure you have the following:
 #### Example Outputs
 
 <p>
-   <img src=
+   <img src="https://github.com/amirh-far/ledControlAgent/blob/main/imgs/1.png" />
+   <img src="https://github.com/amirh-far/ledControlAgent/blob/main/imgs/2.png" />
+   <img src="https://github.com/amirh-far/ledControlAgent/blob/main/imgs/3.png" />
 </p>
 
 
